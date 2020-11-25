@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
-    <kbase name="rules" packages="com.drools.example.rules">
-        <ksession name="ksession-rules" />
+    <kbase name="rules-helloworld" packages="com.drools.example.helloworld">
+        <ksession name="ksession-rules-helloworld" />
+    </kbase>
+    <kbase name="rules-measurement" packages="com.drools.example.measurement">
+        <ksession name="ksession-rules-measurement" />
     </kbase>
 </kmodule>

@@ -11,22 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-package com.drools.example.rules
-import com.drools.example.HelloWorld
+ */
+package com.drools.example.measurement;
 
-rule "HELLO"
-    when
-        helloWorld: HelloWorld(type == Type.HELLO)
-    then
-        System.out.println("Hello, world!");
-        helloWorld.setType(HelloWorld.Type.GOODBYE);
-        update(helloWorld);
-    end
-
-rule "GOODBYE"
-    when
-        HelloWorld(type == Type.GOODBYE)
-    then
-        System.out.println("Goodbye, world!");
-    end
+public class Fire {}
