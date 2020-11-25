@@ -22,16 +22,20 @@ public class MeasurementTest extends AbstractDroolsTest {
         logger = Logger.getLogger(MeasurementTest.class);
     }
 
+    private long countFires() {
+        return kieSession.getObjects()
+                         .stream()
+                         .filter(object -> object instanceof Fire)
+                         .count();
+    }
+
     @Test
     public void measurementNoSmokeLowTemperatureTest() {
         val measurement = new Measurement(false, 20);
         kieSession.insert(measurement);
         kieSession.fireAllRules();
 
-        val count = kieSession.getObjects()
-                              .stream()
-                              .filter(object -> object instanceof Fire)
-                              .count();
+        val count = countFires();
         assertEquals(0L, count);
     }
 
@@ -41,10 +45,7 @@ public class MeasurementTest extends AbstractDroolsTest {
         kieSession.insert(measurement);
         kieSession.fireAllRules();
 
-        val count = kieSession.getObjects()
-                              .stream()
-                              .filter(object -> object instanceof Fire)
-                              .count();
+        val count = countFires();
         assertEquals(1L, count);
     }
 
@@ -54,10 +55,7 @@ public class MeasurementTest extends AbstractDroolsTest {
         kieSession.insert(measurement);
         kieSession.fireAllRules();
 
-        val count = kieSession.getObjects()
-                              .stream()
-                              .filter(object -> object instanceof Fire)
-                              .count();
+        val count = countFires();
         assertEquals(1L, count);
     }
 
@@ -67,10 +65,7 @@ public class MeasurementTest extends AbstractDroolsTest {
         kieSession.insert(measurement);
         kieSession.fireAllRules();
 
-        val count = kieSession.getObjects()
-                              .stream()
-                              .filter(object -> object instanceof Fire)
-                              .count();
+        val count = countFires();
         assertEquals(1L, count);
     }
 }
