@@ -11,19 +11,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 package com.drools.example.measurement
 
-rule "CALL EMERGENCY"
+rule "FIRE TRUCK ARRIVED"
     when
-        Fire()
+        FireTruck()
+        fire: Fire()
     then
-        insert(new Phone(Phone.EMERGENCY_NUMBER));
+        System.out.println("Fire truck arrived!");
+        retract(fire);
     end
 
-rule "FIRE DETECTED"
+rule "FIRE TRUCK LEAVING"
     when
-        Fire()
+        truck: FireTruck()
     then
-        System.out.println("Fire detected!");
+        System.out.println("Fire truck leaving!");
+        retract(truck);
     end

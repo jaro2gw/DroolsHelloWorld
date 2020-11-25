@@ -11,19 +11,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-package com.drools.example.measurement
+ */
+package com.drools.example.measurement;
 
-rule "CALL EMERGENCY"
-    when
-        Fire()
-    then
-        insert(new Phone(Phone.EMERGENCY_NUMBER));
-    end
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-rule "FIRE DETECTED"
-    when
-        Fire()
-    then
-        System.out.println("Fire detected!");
-    end
+@Data
+@AllArgsConstructor
+public class Phone {
+    public static final String EMERGENCY_NUMBER = "112";
+
+    private String number;
+}

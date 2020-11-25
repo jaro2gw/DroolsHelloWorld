@@ -1,6 +1,7 @@
 package com.drools.example;
 
 import lombok.val;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.kie.api.KieServices;
@@ -16,7 +17,10 @@ abstract public class AbstractDroolsTest {
     public void setUp() {
         val kieServices  = KieServices.Factory.get();
         val kieContainer = kieServices.getKieClasspathContainer();
-        val name = getRulesName();
+        val name         = getRulesName();
         kieSession = kieContainer.newKieSession(name);
+        BasicConfigurator.configure();
+        val clazz = this.getClass();
+        logger = Logger.getLogger(clazz);
     }
 }
