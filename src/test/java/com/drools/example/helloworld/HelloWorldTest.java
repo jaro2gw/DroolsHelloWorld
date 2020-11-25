@@ -43,6 +43,6 @@ public class HelloWorldTest extends AbstractDroolsTest {
         kieSession.fireAllRules();
 
         logger.debug(helloWorld);
-        assertEquals(helloWorld.getType(), HelloWorld.Type.GOODBYE);
+        assertEquals(HelloWorld.Type.GOODBYE, helloWorld.getType());
     }
 }
