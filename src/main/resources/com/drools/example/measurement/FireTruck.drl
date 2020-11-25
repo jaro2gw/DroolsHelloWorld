@@ -11,7 +11,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 package com.drools.example.measurement
 
 rule "FIRE TRUCK ARRIVED"
@@ -26,6 +26,7 @@ rule "FIRE TRUCK ARRIVED"
 rule "FIRE TRUCK LEAVING"
     when
         truck: FireTruck()
+        not Fire()
     then
         System.out.println("Fire truck leaving!");
         retract(truck);

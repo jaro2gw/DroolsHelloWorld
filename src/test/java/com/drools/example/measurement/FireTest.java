@@ -2,9 +2,11 @@ package com.drools.example.measurement;
 
 import com.drools.example.AbstractDroolsTest;
 import lombok.val;
+import org.junit.Before;
 import org.junit.Test;
 
 import static com.drools.example.measurement.TestingUtils.countEmergencyPhones;
+import static com.drools.example.measurement.TestingUtils.retractInitialFire;
 import static org.junit.Assert.assertEquals;
 
 public class FireTest extends AbstractDroolsTest {
@@ -13,10 +15,18 @@ public class FireTest extends AbstractDroolsTest {
         return "ksession-rules-measurement";
     }
 
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+        retractInitialFire(kieSession);
+    }
+
     @Test
     public void noFireTest() {
-        val count = countEmergencyPhones(kieSession);
-        assertEquals(0, count);
+        kieSession.fireAllRules();
+        val phones = countEmergencyPhones(kieSession);
+        assertEquals(1, phones);
     }
 
     @Test
@@ -24,8 +34,8 @@ public class FireTest extends AbstractDroolsTest {
         val fire = new Fire();
         kieSession.insert(fire);
         kieSession.fireAllRules();
-        val count = countEmergencyPhones(kieSession);
-        assertEquals(1, count);
+        val phones = countEmergencyPhones(kieSession);
+        assertEquals(2, phones);
     }
 
     @Test
@@ -36,7 +46,7 @@ public class FireTest extends AbstractDroolsTest {
             kieSession.insert(fire);
         }
         kieSession.fireAllRules();
-        val count = countEmergencyPhones(kieSession);
-        assertEquals(number, count);
+        val phones = countEmergencyPhones(kieSession);
+        assertEquals(number + 1, phones);
     }
 }

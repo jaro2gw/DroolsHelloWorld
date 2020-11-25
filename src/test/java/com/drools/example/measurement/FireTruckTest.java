@@ -2,10 +2,10 @@ package com.drools.example.measurement;
 
 import com.drools.example.AbstractDroolsTest;
 import lombok.val;
+import org.junit.Before;
 import org.junit.Test;
 
-import static com.drools.example.measurement.TestingUtils.countFireTrucks;
-import static com.drools.example.measurement.TestingUtils.countFires;
+import static com.drools.example.measurement.TestingUtils.*;
 import static org.junit.Assert.assertEquals;
 
 public class FireTruckTest extends AbstractDroolsTest {
@@ -14,10 +14,15 @@ public class FireTruckTest extends AbstractDroolsTest {
         return "ksession-rules-measurement";
     }
 
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+        retractInitialFire(kieSession);
+    }
+
     @Test
-    public void noFireTest() {
-        val truck = new FireTruck();
-        kieSession.insert(truck);
+    public void retractInitialFireTest() {
         kieSession.fireAllRules();
         val fires  = countFires(kieSession);
         val trucks = countFireTrucks(kieSession);

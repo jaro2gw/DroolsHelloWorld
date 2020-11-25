@@ -14,9 +14,23 @@
 */
 package com.drools.example.measurement
 
+rule "INITIAL"
+    when
+    then
+        insert(new Measurement(true, 180));
+        System.out.println("Initial rule fired");
+    end
+
 rule "ALARMING MEASUREMENT DETECTED"
     when
-        Measurement((smoke) || (temperature > 150))
+        exists Measurement(smoke || temperature > 150)
     then
         insert(new Fire());
+    end
+
+rule "RETRACT UNUSED MEASUREMENT"
+    when
+        measurement: Measurement()
+    then
+        retract(measurement);
     end

@@ -15,20 +15,16 @@ public class HelloWorldTest extends AbstractDroolsTest {
     @Test
     public void helloWorldTypeHelloTest() {
         val helloWorld = new HelloWorld(HelloWorld.Type.HELLO);
-
         kieSession.insert(helloWorld);
         kieSession.fireAllRules();
-
         assertEquals(HelloWorld.Type.GOODBYE, helloWorld.getType());
     }
 
     @Test
     public void helloWorldTypeGoodByeTest() {
         val helloWorld = new HelloWorld(HelloWorld.Type.GOODBYE);
-
         kieSession.insert(helloWorld);
         kieSession.fireAllRules();
-
         assertEquals(HelloWorld.Type.GOODBYE, helloWorld.getType());
     }
 }
