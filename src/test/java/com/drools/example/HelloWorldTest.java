@@ -1,5 +1,6 @@
 package com.drools.example;
 
+import lombok.val;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -19,11 +20,11 @@ public class HelloWorldTest {
 
     @Test
     public void executeHelloWorldRules() {
-        var kservices  = KieServices.Factory.get();
-        var kcontainer = kservices.getKieClasspathContainer();
-        var ksession   = kcontainer.newKieSession("ksession-rules");
+        val kservices  = KieServices.Factory.get();
+        val kcontainer = kservices.getKieClasspathContainer();
+        val ksession   = kcontainer.newKieSession("ksession-rules");
 
-        var helloWorld = new HelloWorld(HelloWorld.Type.HELLO);
+        val helloWorld = new HelloWorld(HelloWorld.Type.HELLO);
         logger.debug(helloWorld);
 
         ksession.insert(helloWorld);
