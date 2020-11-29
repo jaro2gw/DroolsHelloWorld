@@ -6,8 +6,6 @@ import com.drools.example.utils.AgendaFilters;
 import lombok.val;
 import org.junit.Test;
 
-import static com.drools.example.family.utils.TestingUtils.countUnclesOf;
-import static com.drools.example.family.utils.TestingUtils.existsRelation;
 import static org.junit.Assert.*;
 
 public class RelationTest extends AbstractDroolsTest {
@@ -27,7 +25,7 @@ public class RelationTest extends AbstractDroolsTest {
         val relation = new Relation(father, child, Relation.Type.PARENT);
         kieSession.insert(relation);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, father, child, Relation.Type.FATHER);
+        val exists = TestingUtils.existsRelation(kieSession, father, child, Relation.Type.FATHER);
         assertTrue(exists);
     }
 
@@ -38,7 +36,7 @@ public class RelationTest extends AbstractDroolsTest {
         val relation = new Relation(mother, child, Relation.Type.PARENT);
         kieSession.insert(relation);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, mother, child, Relation.Type.MOTHER);
+        val exists = TestingUtils.existsRelation(kieSession, mother, child, Relation.Type.MOTHER);
         assertTrue(exists);
     }
 
@@ -52,7 +50,7 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r1);
         kieSession.insert(r2);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, gparent, child, Relation.Type.GRANDPARENT);
+        val exists = TestingUtils.existsRelation(kieSession, gparent, child, Relation.Type.GRANDPARENT);
         assertTrue(exists);
     }
 
@@ -63,7 +61,7 @@ public class RelationTest extends AbstractDroolsTest {
         val relation = new Relation(gfather, child, Relation.Type.GRANDPARENT);
         kieSession.insert(relation);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, gfather, child, Relation.Type.GRANDFATHER);
+        val exists = TestingUtils.existsRelation(kieSession, gfather, child, Relation.Type.GRANDFATHER);
         assertTrue(exists);
     }
 
@@ -74,7 +72,7 @@ public class RelationTest extends AbstractDroolsTest {
         val relation = new Relation(gmother, child, Relation.Type.GRANDPARENT);
         kieSession.insert(relation);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, gmother, child, Relation.Type.GRANDMOTHER);
+        val exists = TestingUtils.existsRelation(kieSession, gmother, child, Relation.Type.GRANDMOTHER);
         assertTrue(exists);
     }
 
@@ -88,13 +86,13 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r1);
         kieSession.insert(r2);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val e1 = existsRelation(kieSession, sibling1, sibling2, Relation.Type.SIBLING);
+        val e1 = TestingUtils.existsRelation(kieSession, sibling1, sibling2, Relation.Type.SIBLING);
         assertTrue(e1);
-        val e2 = existsRelation(kieSession, sibling2, sibling1, Relation.Type.SIBLING);
+        val e2 = TestingUtils.existsRelation(kieSession, sibling2, sibling1, Relation.Type.SIBLING);
         assertTrue(e2);
-        val e3 = existsRelation(kieSession, sibling1, sibling1, Relation.Type.SIBLING);
+        val e3 = TestingUtils.existsRelation(kieSession, sibling1, sibling1, Relation.Type.SIBLING);
         assertFalse(e3);
-        val e4 = existsRelation(kieSession, sibling2, sibling2, Relation.Type.SIBLING);
+        val e4 = TestingUtils.existsRelation(kieSession, sibling2, sibling2, Relation.Type.SIBLING);
         assertFalse(e4);
     }
 
@@ -105,7 +103,7 @@ public class RelationTest extends AbstractDroolsTest {
         val relation = new Relation(brother, sibling, Relation.Type.SIBLING);
         kieSession.insert(relation);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, brother, sibling, Relation.Type.BROTHER);
+        val exists = TestingUtils.existsRelation(kieSession, brother, sibling, Relation.Type.BROTHER);
         assertTrue(exists);
     }
 
@@ -116,7 +114,7 @@ public class RelationTest extends AbstractDroolsTest {
         val relation = new Relation(sister, sibling, Relation.Type.SIBLING);
         kieSession.insert(relation);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, sister, sibling, Relation.Type.SISTER);
+        val exists = TestingUtils.existsRelation(kieSession, sister, sibling, Relation.Type.SISTER);
         assertTrue(exists);
     }
 
@@ -130,7 +128,7 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r1);
         kieSession.insert(r2);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, brother, child, Relation.Type.BROTHER_OF_FATHER);
+        val exists = TestingUtils.existsRelation(kieSession, brother, child, Relation.Type.BROTHER_OF_FATHER);
         assertTrue(exists);
     }
 
@@ -144,7 +142,7 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r1);
         kieSession.insert(r2);
         kieSession.fireAllRules(AgendaFilters.noInitRule());
-        val exists = existsRelation(kieSession, brother, child, Relation.Type.BROTHER_OF_MOTHER);
+        val exists = TestingUtils.existsRelation(kieSession, brother, child, Relation.Type.BROTHER_OF_MOTHER);
         assertTrue(exists);
     }
 
@@ -159,7 +157,7 @@ public class RelationTest extends AbstractDroolsTest {
         }
         kieSession.fireAllRules(AgendaFilters.noInitRule());
         val results = kieSession.getQueryResults("UNCLES");
-        val count   = countUnclesOf(results, child);
+        val count   = TestingUtils.countUnclesOf(results, child);
         assertEquals(number, count);
     }
 
@@ -174,7 +172,7 @@ public class RelationTest extends AbstractDroolsTest {
         }
         kieSession.fireAllRules(AgendaFilters.noInitRule());
         val results = kieSession.getQueryResults("UNCLES");
-        val count   = countUnclesOf(results, child);
+        val count   = TestingUtils.countUnclesOf(results, child);
         assertEquals(number, count);
     }
 
@@ -194,7 +192,7 @@ public class RelationTest extends AbstractDroolsTest {
         }
         kieSession.fireAllRules(AgendaFilters.noInitRule());
         val results = kieSession.getQueryResults("UNCLES");
-        val count   = countUnclesOf(results, child);
+        val count   = TestingUtils.countUnclesOf(results, child);
         assertEquals(number * 2, count);
     }
 
@@ -213,9 +211,9 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r3);
         kieSession.insert(r4);
         kieSession.fireAllRules(AgendaFilters.composite(AgendaFilters.noInitRule(), TestingUtils.cousinRule("#1")));
-        val e1 = existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
+        val e1 = TestingUtils.existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
         assertTrue(e1);
-        val e2 = existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
+        val e2 = TestingUtils.existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
         assertTrue(e2);
     }
 
@@ -235,17 +233,17 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r3);
         kieSession.insert(r4);
         kieSession.fireAllRules(AgendaFilters.composite(AgendaFilters.noInitRule(), TestingUtils.cousinRule("#2")));
-        val e1 = existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
+        val e1 = TestingUtils.existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
         assertTrue(e1);
-        val e2 = existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
+        val e2 = TestingUtils.existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
         assertTrue(e2);
-        val e3 = existsRelation(kieSession, cousin2, cousin3, Relation.Type.COUSIN);
+        val e3 = TestingUtils.existsRelation(kieSession, cousin2, cousin3, Relation.Type.COUSIN);
         assertTrue(e3);
-        val e4 = existsRelation(kieSession, cousin3, cousin2, Relation.Type.COUSIN);
+        val e4 = TestingUtils.existsRelation(kieSession, cousin3, cousin2, Relation.Type.COUSIN);
         assertTrue(e4);
-        val e5 = existsRelation(kieSession, cousin1, cousin3, Relation.Type.COUSIN);
+        val e5 = TestingUtils.existsRelation(kieSession, cousin1, cousin3, Relation.Type.COUSIN);
         assertFalse(e5);
-        val e6 = existsRelation(kieSession, cousin3, cousin1, Relation.Type.COUSIN);
+        val e6 = TestingUtils.existsRelation(kieSession, cousin3, cousin1, Relation.Type.COUSIN);
         assertFalse(e6);
     }
 
@@ -266,17 +264,17 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r4);
         kieSession.insert(r5);
         kieSession.fireAllRules(AgendaFilters.composite(AgendaFilters.noInitRule(), TestingUtils.cousinRule("#3")));
-        val e1 = existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
+        val e1 = TestingUtils.existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
         assertFalse(e1);
-        val e2 = existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
+        val e2 = TestingUtils.existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
         assertFalse(e2);
-        val e3 = existsRelation(kieSession, cousin1, cousin3, Relation.Type.COUSIN);
+        val e3 = TestingUtils.existsRelation(kieSession, cousin1, cousin3, Relation.Type.COUSIN);
         assertTrue(e3);
-        val e4 = existsRelation(kieSession, cousin3, cousin1, Relation.Type.COUSIN);
+        val e4 = TestingUtils.existsRelation(kieSession, cousin3, cousin1, Relation.Type.COUSIN);
         assertTrue(e4);
-        val e5 = existsRelation(kieSession, cousin2, cousin3, Relation.Type.COUSIN);
+        val e5 = TestingUtils.existsRelation(kieSession, cousin2, cousin3, Relation.Type.COUSIN);
         assertTrue(e5);
-        val e6 = existsRelation(kieSession, cousin3, cousin2, Relation.Type.COUSIN);
+        val e6 = TestingUtils.existsRelation(kieSession, cousin3, cousin2, Relation.Type.COUSIN);
         assertTrue(e6);
     }
 
@@ -296,13 +294,13 @@ public class RelationTest extends AbstractDroolsTest {
         kieSession.insert(r3);
         kieSession.insert(r4);
         kieSession.fireAllRules(AgendaFilters.composite(AgendaFilters.noInitRule(), TestingUtils.cousinRule("#4")));
-        val e1 = existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
+        val e1 = TestingUtils.existsRelation(kieSession, cousin1, cousin2, Relation.Type.COUSIN);
         assertTrue(e1);
-        val e2 = existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
+        val e2 = TestingUtils.existsRelation(kieSession, cousin2, cousin1, Relation.Type.COUSIN);
         assertTrue(e2);
-        val e3 = existsRelation(kieSession, cousin1, cousin1, Relation.Type.COUSIN);
+        val e3 = TestingUtils.existsRelation(kieSession, cousin1, cousin1, Relation.Type.COUSIN);
         assertFalse(e3);
-        val e4 = existsRelation(kieSession, cousin2, cousin2, Relation.Type.COUSIN);
+        val e4 = TestingUtils.existsRelation(kieSession, cousin2, cousin2, Relation.Type.COUSIN);
         assertFalse(e4);
     }
 }

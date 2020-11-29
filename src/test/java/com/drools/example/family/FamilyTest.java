@@ -5,29 +5,27 @@ import com.drools.example.family.utils.TestingUtils;
 import lombok.val;
 import org.junit.Test;
 
-import static com.drools.example.family.utils.TestingUtils.countCousins;
-import static com.drools.example.family.utils.TestingUtils.countPeople;
 import static org.junit.Assert.assertEquals;
 
 public class FamilyTest extends AbstractDroolsTest {
     @Test
     public void everyoneIsHereTest() {
         kieSession.fireAllRules();
-        val total = countPeople(kieSession);
+        val total = TestingUtils.countPeople(kieSession);
         assertEquals(18, total);
     }
 
     @Test
     public void malesAreHereTest() {
         kieSession.fireAllRules();
-        val males = countPeople(kieSession, Person.Gender.MALE);
+        val males = TestingUtils.countPeople(kieSession, Person.Gender.MALE);
         assertEquals(10, males);
     }
 
     @Test
     public void femalesAreHereTest() {
         kieSession.fireAllRules();
-        val females = countPeople(kieSession, Person.Gender.FEMALE);
+        val females = TestingUtils.countPeople(kieSession, Person.Gender.FEMALE);
         assertEquals(8, females);
     }
 
@@ -42,7 +40,7 @@ public class FamilyTest extends AbstractDroolsTest {
     @Test
     public void cousinTest() {
         kieSession.fireAllRules(TestingUtils.cousinRule("ALL"));
-        val cousins = countCousins(kieSession);
+        val cousins = TestingUtils.countCousins(kieSession);
         assertEquals(16, cousins);
     }
 }
