@@ -7,11 +7,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class HelloWorldTest extends AbstractDroolsTest {
-    @Override
-    protected String getRulesName() {
-        return "ksession-rules-helloworld";
-    }
-
     @Test
     public void helloWorldTypeHelloTest() {
         val helloWorld = new HelloWorld(HelloWorld.Type.HELLO);

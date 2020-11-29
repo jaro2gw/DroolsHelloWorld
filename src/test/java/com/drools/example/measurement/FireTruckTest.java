@@ -1,29 +1,18 @@
 package com.drools.example.measurement;
 
 import com.drools.example.AbstractDroolsTest;
+import com.drools.example.utils.AgendaFilters;
 import lombok.val;
-import org.junit.Before;
 import org.junit.Test;
 
-import static com.drools.example.measurement.TestingUtils.*;
+import static com.drools.example.measurement.utils.TestingUtils.countFireTrucks;
+import static com.drools.example.measurement.utils.TestingUtils.countFires;
 import static org.junit.Assert.assertEquals;
 
 public class FireTruckTest extends AbstractDroolsTest {
-    @Override
-    protected String getRulesName() {
-        return "ksession-rules-measurement";
-    }
-
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-        retractInitialFire(kieSession);
-    }
-
     @Test
-    public void retractInitialFireTest() {
-        kieSession.fireAllRules();
+    public void noFireTest() {
+        kieSession.fireAllRules(AgendaFilters.noInitRule());
         val fires  = countFires(kieSession);
         val trucks = countFireTrucks(kieSession);
         assertEquals(0, fires);
@@ -36,7 +25,7 @@ public class FireTruckTest extends AbstractDroolsTest {
         val truck = new FireTruck();
         kieSession.insert(fire);
         kieSession.insert(truck);
-        kieSession.fireAllRules();
+        kieSession.fireAllRules(AgendaFilters.noInitRule());
         val fires  = countFires(kieSession);
         val trucks = countFireTrucks(kieSession);
         assertEquals(0, fires);
@@ -52,7 +41,7 @@ public class FireTruckTest extends AbstractDroolsTest {
         }
         val truck = new FireTruck();
         kieSession.insert(truck);
-        kieSession.fireAllRules();
+        kieSession.fireAllRules(AgendaFilters.noInitRule());
         val fires  = countFires(kieSession);
         val trucks = countFireTrucks(kieSession);
         assertEquals(0, fires);

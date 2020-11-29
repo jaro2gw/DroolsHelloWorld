@@ -1,0 +1,50 @@
+package com.drools.example.family;
+
+rule "INIT"
+	when
+	then
+		Person maria          = new Person("Maria");
+		Person ewa            = new Person("Ewa");
+		Person agata          = new Person("Agata");
+		Person anna           = new Person("Anna");
+		Person agnieszka      = new Person("Agnieszka");
+		Person beata          = new Person("Beata");
+		Person iwona          = new Person("Iwona");
+		Person joanna         = new Person("Joanna");
+		Person piotr          = new Person("Piotr");
+		Person adam           = new Person("Adam");
+		Person marek          = new Person("Marek");
+		Person robert         = new Person("Robert");
+		Person jan            = new Person("Jan");
+		Person krzysztof      = new Person("Krzysztof");
+		Person radek          = new Person("Radek");
+		Person darek          = new Person("Darek");
+		Person tomek          = new Person("Tomek");
+		Person jacek          = new Person("Jacek");
+
+		insert(new Relation(maria, marek, Relation.Type.PARENT));
+		insert(new Relation(maria, agata, Relation.Type.PARENT));
+		insert(new Relation(maria, jan, Relation.Type.PARENT));
+		insert(new Relation(piotr, marek, Relation.Type.PARENT));
+		insert(new Relation(piotr, agata, Relation.Type.PARENT));
+		insert(new Relation(piotr, jan, Relation.Type.PARENT));
+		insert(new Relation(ewa, anna, Relation.Type.PARENT));
+		insert(new Relation(ewa, joanna, Relation.Type.PARENT));
+		insert(new Relation(ewa, krzysztof, Relation.Type.PARENT));
+		insert(new Relation(adam, anna, Relation.Type.PARENT));
+		insert(new Relation(adam, joanna, Relation.Type.PARENT));
+		insert(new Relation(adam, krzysztof, Relation.Type.PARENT));
+		insert(new Relation(agata, radek, Relation.Type.PARENT));
+		insert(new Relation(agata, beata, Relation.Type.PARENT));
+		insert(new Relation(robert, radek, Relation.Type.PARENT));
+		insert(new Relation(robert, beata, Relation.Type.PARENT));
+		insert(new Relation(anna, darek, Relation.Type.PARENT));
+		insert(new Relation(anna, tomek, Relation.Type.PARENT));
+		insert(new Relation(jan, darek, Relation.Type.PARENT));
+		insert(new Relation(jan, tomek, Relation.Type.PARENT));
+		insert(new Relation(agnieszka, jacek, Relation.Type.PARENT));
+		insert(new Relation(agnieszka, iwona, Relation.Type.PARENT));
+		insert(new Relation(krzysztof, jacek, Relation.Type.PARENT));
+		insert(new Relation(krzysztof, iwona, Relation.Type.PARENT));
+end
+

@@ -1,0 +1,214 @@
+package com.drools.example.family;
+
+import org.apache.log4j.Logger;
+global Logger logger
+
+function Relation introduce(Person p1, Person p2, Relation.Type type, Logger logger) {
+    Relation relation = new Relation(p1, p2, type);
+    logger.info(relation.toString());
+    return relation;
+}
+
+function void genderRevealParty(Person person, Person.Gender gender, Logger logger) {
+    logger.info(person + " is " + gender);
+    person.setGender(gender);
+}
+
+rule "FEMALE"
+    when
+        Relation($person: p1, $person.name matches "[A-Z][a-z]+a", $person.gender == Person.Gender.UNKNOWN) or
+        Relation($person: p2, $person.name matches "[A-Z][a-z]+a", $person.gender == Person.Gender.UNKNOWN)
+    then
+        genderRevealParty($person, Person.Gender.FEMALE, logger);
+        $person.getRelations().forEach(relation -> update(relation));
+end
+
+rule "MALE"
+    when
+        Relation($person: p1, $person.name matches "[A-Z][a-z]+[^a]", $person.gender == Person.Gender.UNKNOWN) or
+        Relation($person: p2, $person.name matches "[A-Z][a-z]+[^a]", $person.gender == Person.Gender.UNKNOWN)
+    then
+        genderRevealParty($person, Person.Gender.MALE, logger);
+        $person.getRelations().forEach(relation -> update(relation));
+end
+
+rule "FATHER"
+    when
+        Relation($father := p1, $father.gender == Person.Gender.MALE, $child := p2, type == Relation.Type.PARENT)
+        not Relation($father := p1, $child := p2, type == Relation.Type.FATHER)
+    then
+        insert(introduce($father, $child, Relation.Type.FATHER, logger));
+end
+
+rule "MOTHER"
+    when
+        Relation($mother := p1, $mother.gender == Person.Gender.FEMALE, $child := p2, type == Relation.Type.PARENT)
+        not Relation($mother := p1, $child := p2, type == Relation.Type.MOTHER)
+    then
+        insert(introduce($mother, $child, Relation.Type.MOTHER, logger));
+end
+
+rule "GRANDPARENT"
+    when
+        Relation($gparent := p1, $parent := p2, type == Relation.Type.PARENT)
+        Relation($parent := p1, $child := p2, type == Relation.Type.PARENT)
+        not Relation($gparent := p1, $child := p2, type == Relation.Type.GRANDPARENT)
+    then
+        insert(introduce($gparent, $child, Relation.Type.GRANDPARENT, logger));
+end
+
+rule "GRANDFATHER"
+    when
+        Relation($gfather := p1, $child := p2, $gfather.gender == Person.Gender.MALE, type == Relation.Type.GRANDPARENT)
+        not Relation($gfather := p1, $child := p2, type == Relation.Type.GRANDFATHER)
+    then
+        insert(introduce($gfather, $child, Relation.Type.GRANDFATHER, logger));
+end
+
+rule "GRANDMOTHER"
+    when
+        Relation($gmother := p1, $child := p2, $gmother.gender == Person.Gender.FEMALE, type == Relation.Type.GRANDPARENT)
+        not Relation($gmother := p1, $child := p2, type == Relation.Type.GRANDMOTHER)
+    then
+        insert(introduce($gmother, $child, Relation.Type.GRANDMOTHER, logger));
+end
+
+rule "SIBLING"
+    when
+        Relation($parent := p1, $sibling1 := p2, type == Relation.Type.PARENT)
+        Relation($parent := p1, $sibling2 := p2, type == Relation.Type.PARENT, $sibling1 != $sibling2)
+        not Relation($sibling1 := p1, $sibling2 := p2, type == Relation.Type.SIBLING)
+    then
+        insert(introduce($sibling1, $sibling2, Relation.Type.SIBLING, logger));
+        insert(introduce($sibling2, $sibling1, Relation.Type.SIBLING, logger));
+end
+
+rule "BROTHER"
+    when
+        Relation($brother := p1, $brother.gender == Person.Gender.MALE, $sibling := p2, type == Relation.Type.SIBLING)
+        not Relation($brother := p1, $sibling := p2, type == Relation.Type.BROTHER)
+    then
+        insert(introduce($brother, $sibling, Relation.Type.BROTHER, logger));
+end
+
+rule "SISTER"
+    when
+        Relation($sister := p1, $sister.gender == Person.Gender.FEMALE, $sibling := p2, type == Relation.Type.SIBLING)
+        not Relation($sister := p1, $sibling := p2, type == Relation.Type.SISTER)
+    then
+        insert(introduce($sister, $sibling, Relation.Type.SISTER, logger));
+end
+
+rule "BROTHER OF FATHER"
+    when
+        Relation($brother := p1, $father := p2, type == Relation.Type.BROTHER)
+        Relation($father := p1, $child := p2, type == Relation.Type.FATHER)
+        not Relation($brother := p1, $child := p2, type == Relation.Type.BROTHER_OF_FATHER)
+    then
+        insert(introduce($brother, $child, Relation.Type.BROTHER_OF_FATHER, logger));
+end
+
+rule "BROTHER OF MOTHER"
+    when
+        Relation($brother := p1, $mother := p2, type == Relation.Type.BROTHER)
+        Relation($mother := p1, $child := p2, type == Relation.Type.MOTHER)
+        not Relation($brother := p1, $child := p2, type == Relation.Type.BROTHER_OF_MOTHER)
+    then
+        insert(introduce($brother, $child, Relation.Type.BROTHER_OF_MOTHER, logger));
+end
+
+query "UNCLES"
+    relation: Relation(type == Relation.Type.BROTHER_OF_MOTHER || type == Relation.Type.BROTHER_OF_FATHER)
+end
+
+rule "COUSIN #1"
+    when
+        (
+            Relation($sibling1 := p1, $cousin1 := p2, type == Relation.Type.PARENT) and
+            Relation($sibling2 := p1, $cousin2 := p2, type == Relation.Type.PARENT) and
+            (
+                Relation($sibling1 := p1, $sibling2 := p2, type == Relation.Type.SIBLING) or
+                Relation($sibling2 := p1, $sibling1 := p2, type == Relation.Type.SIBLING)
+            )
+        )
+        not Relation($cousin1 := p1, $cousin2 := p2, type == Relation.Type.COUSIN)
+    then
+        logger.info("COUSIN #1");
+        insert(introduce($cousin1, $cousin2, Relation.Type.COUSIN, logger));
+        insert(introduce($cousin2, $cousin1, Relation.Type.COUSIN, logger));
+end
+
+rule "COUSIN #2"
+    when
+        (
+            Relation($uncle := p1, $cousin1 := p2, type == Relation.Type.FATHER) and
+            Relation($uncle := p1, $cousin2 := p2, (type == Relation.Type.BROTHER_OF_FATHER || type == Relation.Type.BROTHER_OF_MOTHER))
+        )
+        not Relation($cousin1 := p1, $cousin2 := p2, type == Relation.Type.COUSIN)
+    then
+        logger.info("COUSIN #2");
+        insert(introduce($cousin1, $cousin2, Relation.Type.COUSIN, logger));
+        insert(introduce($cousin2, $cousin1, Relation.Type.COUSIN, logger));
+end
+
+rule "COUSIN #3"
+    when
+        (
+            Relation($gparent := p1, $cousin1 := p2, type == Relation.Type.GRANDPARENT) and
+            Relation($gparent := p1, $cousin2 := p2, type == Relation.Type.GRANDPARENT, $cousin1 != $cousin2) and
+            not Relation($cousin1 := p1, $cousin2 := p2, type == Relation.Type.SIBLING)
+        )
+        not Relation($cousin1 := p1, $cousin2 := p2, type == Relation.Type.COUSIN)
+    then
+        logger.info("COUSIN #3");
+        insert(introduce($cousin1, $cousin2, Relation.Type.COUSIN, logger));
+        insert(introduce($cousin2, $cousin1, Relation.Type.COUSIN, logger));
+end
+
+rule "COUSIN #4"
+    when
+        (
+            Relation($gparent := p1, $sibling1 := p2, type == Relation.Type.PARENT) and
+            Relation($gparent := p1, $sibling2 := p2, type == Relation.Type.PARENT, $sibling1 != $sibling2) and
+            Relation($sibling1 := p1, $cousin1 := p2, type == Relation.Type.PARENT) and
+            Relation($sibling2 := p1, $cousin2 := p2, type == Relation.Type.PARENT)
+        )
+        not Relation($cousin1 := p1, $cousin2 := p2, type == Relation.Type.COUSIN)
+    then
+        logger.info("COUSIN #4");
+        insert(introduce($cousin1, $cousin2, Relation.Type.COUSIN, logger));
+        insert(introduce($cousin2, $cousin1, Relation.Type.COUSIN, logger));
+end
+
+rule "COUSIN ALL"
+    when
+        (
+            (
+                Relation($sibling1 := p1, $cousin1 := p2, type == Relation.Type.PARENT) and
+                Relation($sibling2 := p1, $cousin2 := p2, type == Relation.Type.PARENT) and
+                (
+                    Relation($sibling1 := p1, $sibling2 := p2, type == Relation.Type.SIBLING) or
+                    Relation($sibling2 := p1, $sibling1 := p2, type == Relation.Type.SIBLING)
+                )
+            )   or
+            (
+                Relation($uncle := p1, $cousin1 := p2, type == Relation.Type.FATHER) and
+                Relation($uncle := p1, $cousin2 := p2, (type == Relation.Type.BROTHER_OF_FATHER || type == Relation.Type.BROTHER_OF_MOTHER))
+            )   or
+            (
+                Relation($gparent := p1, $cousin1 := p2, type == Relation.Type.GRANDPARENT) and
+                Relation($gparent := p1, $cousin2 := p2, type == Relation.Type.GRANDPARENT, $cousin1 != $cousin2) and
+                not Relation($cousin1 := p1, $cousin2 := p2, type == Relation.Type.SIBLING)
+            )   or
+            (
+                Relation($gparent := p1, $sibling1 := p2, type == Relation.Type.PARENT) and
+                Relation($gparent := p1, $sibling2 := p2, type == Relation.Type.PARENT, $sibling1 != $sibling2) and
+                Relation($sibling1 := p1, $cousin1 := p2, type == Relation.Type.PARENT) and
+                Relation($sibling2 := p1, $cousin2 := p2, type == Relation.Type.PARENT)
+            )
+        )
+        not Relation($cousin1 := p1, $cousin2 := p2, type == Relation.Type.COUSIN)
+    then
+        insert(introduce($cousin1, $cousin2, Relation.Type.COUSIN, logger));
+        insert(introduce($cousin2, $cousin1, Relation.Type.COUSIN, logger));
+end
