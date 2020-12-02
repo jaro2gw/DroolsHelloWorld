@@ -1,11 +1,11 @@
 package com.drools.example.family;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.Logger
 global Logger logger
 
 function Relation introduce(Person p1, Person p2, Relation.Type type, Logger logger) {
     Relation relation = new Relation(p1, p2, type);
-    logger.info(relation.toString());
+    logger.info(relation);
     return relation;
 }
 
