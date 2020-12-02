@@ -1,7 +1,7 @@
 package com.drools.example.measurement;
 
 import org.apache.log4j.Logger;
-global Logger logger
+global Logger logger;
 
 rule "FIRE TRUCK ARRIVED"
     when

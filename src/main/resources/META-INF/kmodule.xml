@@ -9,4 +9,7 @@
     <kbase name="com.drools.example.family" packages="com.drools.example.family">
         <ksession name="com.drools.example.family" />
     </kbase>
+    <kbase name="com.drools.example.computer" packages="com.drools.example.computer">
+        <ksession name="com.drools.example.computer" />
+    </kbase>
 </kmodule>

@@ -1,0 +1,217 @@
+package com.drools.example.computer;
+
+import com.drools.example.computer.component.*;
+
+import org.apache.log4j.Logger
+import javax.swing.JOptionPane
+global Logger logger;
+
+rule "INIT"
+    when
+    then
+        Socket QW3 = new Socket("QW3");
+        Socket XYZ = new Socket("XYZ 1150");
+
+        Processor X6 = new Processor("GPP X6", QW3);
+        Processor FN = new Processor("GPP Fenomenalny", QW3);
+        Processor A5 = new Processor("Orthank A5", XYZ);
+        Processor A7 = new Processor("Orthank A7", XYZ);
+
+        insert(X6);
+        insert(FN);
+        insert(A5);
+        insert(A7);
+
+        MainBoard BUDGET = new MainBoard("Rohan Budżetowy", QW3, false, false);
+        MainBoard EXTRA  = new MainBoard("Rohan Extra", QW3, true, false);
+        MainBoard GONDOR = new MainBoard("Gondor", XYZ, true, true);
+
+        insert(BUDGET);
+        insert(EXTRA);
+        insert(GONDOR);
+
+        GraphicCard ASUS = new GraphicCard("Asus HD7790-DC2OC-1GD5");
+        GraphicCard GIGA = new GraphicCard("Gigabyte GV-N660OC-2GD");
+        GraphicCard MSI  = new GraphicCard("MSI N660 TF 2GD5/OC");
+
+        insert(ASUS);
+        insert(GIGA);
+        insert(MSI);
+
+        SoundCard XONAR_DG = new SoundCard("Asus Xonar DG");
+        SoundCard BLASTER  = new SoundCard("Creative Sound Blaster X-Fi Surround 5.1 Pro");
+        SoundCard XONAR_DX = new SoundCard("ASUS Xonar DX/XD 7.1");
+
+        insert(XONAR_DG);
+        insert(BLASTER);
+        insert(XONAR_DX);
+
+        HardDisk PLEXTOR = new HardDisk("Plextor M5S PX-128M5S");
+        HardDisk SEAGATE = new HardDisk("Seagate Barracuda 7200 ST1000DM003");
+        HardDisk WESTERN = new HardDisk("Western Digital Caviar Blue WD10EZEX");
+
+        insert(PLEXTOR);
+        insert(SEAGATE);
+        insert(WESTERN);
+end
+
+query "MAIN BOARDS"
+    mainBoard: MainBoard()
+end
+
+query "PROCESSORS FOR MAIN BOARD" (MainBoard mainBoard)
+    processor: Processor(socket == mainBoard.socket)
+end
+
+query "GRAPHIC CARDS"
+    graphicCard: GraphicCard()
+end
+
+query "SOUND CARDS"
+    soundCard: SoundCard()
+end
+
+query "HARD DISKS"
+    hardDisk: HardDisk()
+end
+
+function AbstractComponent getChoice(String title, AbstractComponent[] components) {
+    int index = 0;
+    if (components.length > 1) {
+        String separator = System.lineSeparator();
+        StringBuilder message = new StringBuilder("Type the number of your choice")
+            .append(separator)
+            .append("Possible choices are:")
+            .append(separator);
+        for (AbstractComponent component : components) {
+            message.append("    ")
+                .append(++index)
+                .append(". ")
+                .append(component.getName())
+                .append(separator);
+        }
+        String choice = JOptionPane.showInputDialog(null, message, title, JOptionPane.QUESTION_MESSAGE);
+        index = Integer.parseInt(choice) - 1;
+    }
+    return components[index];
+}
+
+rule "MAIN BOARD"
+    when
+        $computer: Computer( mainBoard == null )
+    then
+        org.kie.api.runtime.rule.QueryResults results = kcontext.getKieRuntime().getQueryResults("MAIN BOARDS");
+        MainBoard[] mainBoards = new MainBoard[results.size()];
+        int index = 0;
+        for (org.kie.api.runtime.rule.QueryResultsRow row : results) mainBoards[index++] = (MainBoard) row.get("mainBoard");
+        MainBoard mainBoard = (MainBoard) getChoice("Main Board", mainBoards);
+        $computer.setMainBoard(mainBoard);
+        update($computer);
+end
+
+rule "PROCESSOR"
+    when
+        $computer: Computer( $mainBoard: mainBoard, $mainBoard != null, processor == null )
+    then
+        org.kie.api.runtime.rule.QueryResults results = kcontext.getKieRuntime().getQueryResults("PROCESSORS FOR MAIN BOARD", $mainBoard);
+        Processor[] processors = new Processor[results.size()];
+        int index = 0;
+        for (org.kie.api.runtime.rule.QueryResultsRow row : results) processors[index++] = (Processor) row.get("processor");
+        Processor processor = (Processor) getChoice("Processor", processors);
+        $computer.setProcessor(processor);
+        update($computer);
+end
+
+rule "GRAPHIC CARD"
+    when
+        $computer: Computer(
+            $mainBoard: mainBoard, $mainBoard != null,
+            !$mainBoard.graphicsIntegrated,
+            graphicCard == null
+        )
+    then
+        org.kie.api.runtime.rule.QueryResults results = kcontext.getKieRuntime().getQueryResults("GRAPHIC CARDS");
+        GraphicCard[] graphicCards = new GraphicCard[results.size()];
+        int index = 0;
+        for (org.kie.api.runtime.rule.QueryResultsRow row : results) graphicCards[index++] = (GraphicCard) row.get("graphicCard");
+        GraphicCard graphicCard = (GraphicCard) getChoice("Graphic Card", graphicCards);
+        $computer.setGraphicCard(graphicCard);
+        update($computer);
+end
+
+rule "SOUND CARD"
+    when
+        $computer: Computer(
+            $mainBoard: mainBoard, $mainBoard != null,
+            !$mainBoard.soundIntegrated,
+            soundCard == null
+        )
+    then
+        org.kie.api.runtime.rule.QueryResults results = kcontext.getKieRuntime().getQueryResults("SOUND CARDS");
+        SoundCard[] soundCards = new SoundCard[results.size()];
+        int index = 0;
+        for (org.kie.api.runtime.rule.QueryResultsRow row : results) soundCards[index++] = (SoundCard) row.get("soundCard");
+        SoundCard soundCard = (SoundCard) getChoice("Sound Card", soundCards);
+        $computer.setSoundCard(soundCard);
+        update($computer);
+end
+
+rule "HARD DISK"
+    when
+        $computer: Computer( $mainBoard: mainBoard, $mainBoard != null, hardDisk == null )
+    then
+        org.kie.api.runtime.rule.QueryResults results = kcontext.getKieRuntime().getQueryResults("HARD DISKS");
+        HardDisk[] hardDisks = new HardDisk[results.size()];
+        int index = 0;
+        for (org.kie.api.runtime.rule.QueryResultsRow row : results) hardDisks[index++] = (HardDisk) row.get("hardDisk");
+        HardDisk hardDisk = (HardDisk) getChoice("Hard Disk", hardDisks);
+        $computer.setHardDisk(hardDisk);
+        update($computer);
+end
+
+rule "FINISHED"
+    when
+        $computer: Computer(
+            $mainBoard: mainBoard, $mainBoard != null,
+            $processor: processor, $processor != null,
+            ($mainBoard.graphicsIntegrated || graphicCard != null),
+            ($mainBoard.soundIntegrated || soundCard != null),
+            $hardDisk: hardDisk, $hardDisk != null
+        )
+    then
+        logger.info($computer);
+        String separator = System.lineSeparator();
+        String choices =
+            "Your computer:"+
+            separator+
+            "  - Main Board:"+
+            separator+
+            "    "+
+            $mainBoard.getName()+
+            separator+
+            separator+
+            "  - Processor:"+
+            separator+
+            "    "+
+            $processor.getName()+
+            separator+
+            separator+
+            "  - Graphic Card:"+
+            separator+
+            "    "+
+            ($mainBoard.isGraphicsIntegrated() ? "INTEGRATED" : $computer.getGraphicCard().getName())+
+            separator+
+            separator+
+            "  - Sound Card:"+
+            separator+
+            "    "+
+            ($mainBoard.isSoundIntegrated() ? "INTEGRATED" : $computer.getSoundCard().getName())+
+            separator+
+            separator+
+            "  - Hard Disk:"+
+            separator+
+            "    "+
+            $hardDisk.getName()+
+            separator;
+        JOptionPane.showMessageDialog(null, choices, "Complete Build", JOptionPane.INFORMATION_MESSAGE);
+end

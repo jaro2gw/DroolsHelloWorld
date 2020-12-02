@@ -17,17 +17,16 @@ abstract public class AbstractDroolsTest {
         val kieServices  = KieServices.Factory.get();
         val kieContainer = kieServices.getKieClasspathContainer();
         val clazz        = this.getClass();
-        val name         = clazz.getPackageName();
-        if (logger == null) {
-            BasicConfigurator.configure();
-            logger = Logger.getLogger(clazz);
-        }
+        BasicConfigurator.configure();
+        logger = Logger.getLogger(clazz);
+        val name = clazz.getPackageName();
         kieSession = kieContainer.newKieSession(name);
         kieSession.setGlobal("logger", logger);
     }
 
     @After
     public void tearDown() {
+        logger = null;
         kieSession.dispose();
         kieSession.destroy();
     }
